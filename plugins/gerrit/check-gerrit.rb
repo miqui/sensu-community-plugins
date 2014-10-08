@@ -50,7 +50,7 @@ class GerritHealth < Sensu::Plugin::Check::CLI
     :proc => proc {|a| a.to_i },
     :default => 0
 
-  def get_es_resource(resource)
+  def get_resource(resource)
     begin
       r = RestClient::Resource.new("http://#{config[:server]}:9200/#{resource}", :timeout => 45)
       JSON.parse(r.get)
@@ -64,12 +64,12 @@ class GerritHealth < Sensu::Plugin::Check::CLI
   end
 
   def get_version
-    stats = get_es_resource('/config/server/version')
+    stats = get_resource('/config/server/version')
     node = stats['nodes'].keys.first
     begin
       stats['nodes'][node]['jvm']['mem']['heap_used_in_bytes']
     rescue
-      warning 'Failed to obtain heap used in bytes'
+      warning 'Failed to obtain gerrit version'
     end
   end
 
